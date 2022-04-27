@@ -21,7 +21,8 @@ app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
 ckeditor = CKEditor(app)
 Bootstrap(app)
 
-##CONNECT TO DB
+##DB CONFIGURATION
+
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL", "sqlite:///blog.db")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
@@ -50,9 +51,11 @@ def admin_only(f):
         if not current_user.id == 1:
             return abort(404)
         return f(*args, **kwargs)
+
     return decorated_function
 
-##CONFIGURE TABLES
+
+##TABLES CONFIGURATION
 
 
 class User(db.Model, UserMixin):
@@ -87,9 +90,11 @@ class Comments(db.Model):
     post_id = Column(Integer, ForeignKey('blog_posts.id'))
     post = relationship("BlogPost", back_populates="comments")
 
+
 db.create_all()
 
 
+# VIEWS
 @app.route('/')
 def get_all_posts():
     posts = BlogPost.query.all()
